@@ -66,7 +66,7 @@ const Scene = React.memo(() => {
 
 export default function App() {
   const refreshData = useCallback(() => {
-    fetch('http://localhost:3000/api/random-array')
+    fetch('https://local-react-app-production.up.railway.app/api/random-array')
       .then((res) => res.json())
       .then((data) => {
         // Write directly into the refs — zero React re-renders

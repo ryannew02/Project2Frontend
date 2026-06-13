@@ -14,17 +14,6 @@ var app = express();
 
 app.use(cors());
 
-// Recompile cpp backend
-const { execSync } = require('child_process');
-
-try {
-  console.log('--- Starting C++ Live Compilation via Makefile ---');
-  execSync('make', { cwd: path.join(__dirname, 'Backend'), stdio: 'inherit' });
-  console.log('--- C++ Compilation Successful ---');
-} catch (compileError) {
-  console.error('--- C++ Compilation Failed! ---', compileError);
-}
-
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -80,5 +69,10 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 })
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
 
 module.exports = app;
