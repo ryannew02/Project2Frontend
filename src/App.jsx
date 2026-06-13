@@ -26,10 +26,10 @@ function InstancedCubes({ dataRef, countRef }) {
   });
 
   return (
-    <instancedMesh ref={meshRef} args={[null, null, 100000]}>
-      <boxGeometry args={[0.5, 0.5, 0.5]} />
-      <meshStandardMaterial color="cyan" />
-    </instancedMesh>
+<instancedMesh ref={meshRef} args={[null, null, 100000]} frustumCulled={false}>
+  <boxGeometry args={[0.5, 0.5, 0.5]} />
+  <meshStandardMaterial color="cyan" />
+</instancedMesh>
   );
 }
 
