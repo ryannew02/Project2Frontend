@@ -46,7 +46,7 @@ const { exec } = require('child_process');
 app.get('/api/random-array', (req, res) => {
   
   // Execute the compiled C++ program
-  exec(path.join(__dirname, 'Backend', 'build', 'dataStructure.exe'), (error, stdout, stderr) => {
+  exec(path.join(__dirname, 'Backend', 'build', 'dataStructure'), (error, stdout, stderr) => {
     if (error) {
       console.error(`Execution error: ${error}`);
       return res.status(500).send('Error running C++ code');
