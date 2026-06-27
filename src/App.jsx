@@ -1,446 +1,372 @@
-import React, { useRef, useMemo, useEffect, useCallback } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
-import { OrbitControls } from '@react-three/drei';
+import React, { useState } from 'react';
 
-function InstancedCubes({ dataRef, countRef }) {
-  const meshRef = useRef();
-  const tempObject = useMemo(() => new THREE.Object3D(), []);
-
-  useFrame((state) => {
-    const count = countRef.current;
-    if (!meshRef.current || count === 0) return;
-
-    meshRef.current.count = count;
-
-    for (let i = 0; i < count; i++) {
-      const x = dataRef.current[i * 3];
-      const y = dataRef.current[i * 3 + 1];
-      const z = 0;
-      tempObject.position.set(x, y, z);
-      tempObject.rotation.y = state.clock.getElapsedTime() * 2.0;
-      tempObject.updateMatrix();
-      meshRef.current.setMatrixAt(i, tempObject.matrix);
-    }
-    meshRef.current.instanceMatrix.needsUpdate = true;
-  });
-
-  return (
-<instancedMesh ref={meshRef} args={[null, null, 100000]} frustumCulled={false}>
-  <boxGeometry args={[0.5, 0.5, 0.5]} />
-  <meshStandardMaterial color="cyan" />
-</instancedMesh>
-  );
-}
-
-// No props at all — Scene mounts once and never re-renders
-const Scene = React.memo(() => {
-  const dataRef = useRef([]);
-  const countRef = useRef(0);
-
-  // Expose refs on window so App can write to them without causing re-renders
-  window._dataRef = dataRef;
-  window._countRef = countRef;
-
-  return (
-    <Canvas
-      style={{
-        position: 'absolute',
-        top: '50px',
-        left: '50px',
-        right: '50px',
-        bottom: '50px',
-        width: 'calc(100vw - 100px)',
-        height: 'calc(100vh - 100px)',
-        background: '#ebebeb'
-      }}
-      camera={{ position: [50, 0, 150], fov: 60 }}
-    >
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[10, 20, 15]} intensity={1.2} />
-      <InstancedCubes dataRef={dataRef} countRef={countRef} />
-      <OrbitControls target={[50, 50, 50]} />
-    </Canvas>
-  );
-});
+const WEIGHT_PER_PASSENGER = 190; // lbs average
 
 export default function App() {
-  const refreshData = useCallback(() => {
-    fetch('https://local-react-app-production.up.railway.app/api/random-array')
-      .then((res) => res.json())
-      .then((data) => {
-        // Write directly into the refs — zero React re-renders
-        window._dataRef.current = data;
-        window._countRef.current = Math.floor(data.length / 3);
-      })
-      .catch((err) => console.error("Fetch error:", err));
-  }, []);
+  const [addressInput, setAddressInput] = useState('');
+  const [addresses, setAddresses] = useState([]);
+  const [passengers, setPassengers] = useState(1);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => { refreshData(); }, [refreshData]);
+  // Add address to the list
+  const handleAddAddress = () => {
+    const trimmed = addressInput.trim();
+    if (!trimmed) return;
+    setAddresses([...addresses, trimmed]);
+    setAddressInput('');
+  };
+
+  // Remove an address from the list
+  const handleRemoveAddress = (index) => {
+    setAddresses(addresses.filter((_, i) => i !== index));
+  };
+
+  // Send to backend
+  const handleCalculate = async (algorithm) => {
+    if (addresses.length < 2) {
+      setError('Please enter at least 2 addresses');
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    setResult(null);
+
+    try {
+      const res = await fetch('http://localhost:3000/api/route', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ addresses, passengers, algorithm }),
+      });
+      const data = await res.json();
+      setResult(data);
+    } catch (err) {
+      setError('Failed to reach server');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const estimatedWeight = passengers * WEIGHT_PER_PASSENGER;
 
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#000', position: 'relative', boxSizing: 'border-box' }}>
+    <div style={styles.page}>
 
-      <button
-        onClick={refreshData}
-        style={{
-          position: 'absolute',
-          top: '10px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 10,
-          padding: '12px 24px',
-          background: 'cyan',
-          border: 'none',
-          borderRadius: '4px',
-          cursor: 'pointer',
-          fontWeight: 'bold',
-          color: '#111'
-        }}
-      >
-        Regenerate C++ Data
-      </button>
+      {/* ── Left Panel ── */}
+      <div style={styles.leftPanel}>
 
-      <Scene />
+        {/* Address Input */}
+        <div style={styles.card}>
+          <label style={styles.label}>Address</label>
+          <input
+            style={styles.input}
+            type="text"
+            placeholder="Enter an address..."
+            value={addressInput}
+            onChange={(e) => setAddressInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAddAddress()}
+          />
+          <button style={styles.enterBtn} onClick={handleAddAddress}>
+            Enter
+          </button>
 
+          {/* Address list preview */}
+          {addresses.length > 0 && (
+            <div style={styles.addressList}>
+              {addresses.map((addr, i) => (
+                <div key={i} style={styles.addressChip}>
+                  <span>{i + 1}. {addr}</span>
+                  <button
+                    style={styles.removeBtn}
+                    onClick={() => handleRemoveAddress(i)}
+                  >✕</button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Passenger selector */}
+          <label style={styles.label}>Number of Passengers</label>
+          <div style={styles.passengerRow}>
+            {[1, 2, 3, 4].map((n) => (
+              <button
+                key={n}
+                style={{
+                  ...styles.passengerBtn,
+                  background: passengers === n ? '#0ff' : '#222',
+                  color: passengers === n ? '#000' : '#0ff',
+                }}
+                onClick={() => setPassengers(n)}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Algorithm buttons */}
+        <button
+          style={styles.algoBtn}
+          onClick={() => handleCalculate('splay')}
+          disabled={loading}
+        >
+          {loading ? 'Calculating...' : 'Use Splay Tree to Calculate'}
+        </button>
+
+        <button
+          style={styles.algoBtn}
+          onClick={() => handleCalculate('treap')}
+          disabled={loading}
+        >
+          {loading ? 'Calculating...' : 'Use Treap to Calculate'}
+        </button>
+
+        {error && <p style={styles.error}>{error}</p>}
+      </div>
+
+      {/* ── Right Panel ── */}
+      <div style={styles.rightPanel}>
+
+        {/* Route display */}
+        <div style={styles.card}>
+          <div style={styles.routeHeader}>
+            <span style={styles.label}>Route</span>
+            <span style={styles.weightBadge}>
+              Est. Weight: {estimatedWeight} lbs
+            </span>
+          </div>
+
+          {!result && (
+            <p style={styles.placeholder}>
+              List of addresses (including vertiports) and route will appear here
+            </p>
+          )}
+
+          {result && (
+            <div>
+              {result.route.map((stop, i) => (
+                <div key={i} style={styles.routeStop}>
+                  <span style={styles.stopNumber}>{i + 1}</span>
+                  <div>
+                    <div style={styles.stopAddress}>{stop.address}</div>
+                    {stop.error && (
+                      <div style={styles.stopError}>⚠ Not found in database</div>
+                    )}
+                    <div style={styles.stopCoords}>
+                      {stop.lat !== 0 && `${stop.lat.toFixed(5)}, ${stop.lon.toFixed(5)}`}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Battery info */}
+        <div style={styles.card}>
+          <label style={styles.label}>Battery Charge Needed</label>
+          {!result && (
+            <p style={styles.placeholder}>
+              Battery estimate will appear after calculating a route
+            </p>
+          )}
+          {result && (
+            <div>
+              <div style={styles.batteryRow}>
+                <span>Total Distance</span>
+                <span>{result.total_distance_miles.toFixed(2)} miles</span>
+              </div>
+              <div style={styles.batteryRow}>
+                <span>Passengers</span>
+                <span>{result.passengers}</span>
+              </div>
+              <div style={styles.batteryRow}>
+                <span>Est. Weight</span>
+                <span>{estimatedWeight} lbs</span>
+              </div>
+              <div style={{ ...styles.batteryRow, borderTop: '1px solid #333', paddingTop: '10px', marginTop: '10px' }}>
+                <span>Algorithm Used</span>
+                <span style={{ color: '#0ff' }}>{result.algorithm || 'N/A'}</span>
+              </div>
+            </div>
+          )}
+        </div>
+
+      </div>
     </div>
   );
 }
 
-// export default function App() {
-//   return (
-//     <div style={{ width: '100%', height: '100%' }}>
-//       <Canvas>
-//         <PerspectiveCamera makeDefault position={[0, 0, 50]} />
-//         <ambientLight intensity={0.5} />
-//         <InstancedCubes />
-//         <OrbitControls makeDefault />
-//       </Canvas>
-//     </div>
-//   );
-// }
-
-
-
-////////////////////////////////////
-// simple cube rotational movement
-// import React, { useRef } from 'react';
-// import { Canvas, useFrame } from '@react-three/fiber';
-// import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-
-// function SpinningCube() {
-//   const meshRef = useRef();
-//   useFrame((state, delta) => {
-//     meshRef.current.rotation.x += delta;
-//     meshRef.current.rotation.y += delta * 0.5;
-//   });
-
-//   return (
-//     <mesh ref={meshRef}>
-//       <boxGeometry args={[2, 2, 2]} />
-//       <meshStandardMaterial color="mediumpurple" />
-//     </mesh>
-//   );
-// }
-
-// export default function App() {
-//   return (
-//     <div style={{ width: '100vw', height: '100vh' }}>
-//       <Canvas>
-//         {/* Explicitly setting the camera helps prevent "blank screen" issues */}
-//         <PerspectiveCamera makeDefault position={[0, 0, 5]} />
-//         <ambientLight intensity={0.5} />
-//         <directionalLight position={[10, 10, 5]} intensity={1} />
-//         <SpinningCube />
-//         <OrbitControls />
-//       </Canvas>
-//     </div>
-//   );
-// }
-
-////////////////////////////////////
-// Simple cube axis movement
-
-// import React, { useRef } from 'react';
-// import { Canvas, useFrame } from '@react-three/fiber';
-// import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-
-// function MovingCube() {
-//   const meshRef = useRef();
-
-//   useFrame((state) => {
-//     // We use the clock's elapsed time to move the cube
-//     // Math.sin oscillates between -1 and 1, creating a back-and-forth movement
-//     const t = state.clock.getElapsedTime();
-//     meshRef.current.position.x = Math.sin(t) * 3; // Moves between -3 and +3 on the X-axis
-//   });
-
-//   return (
-//     <mesh ref={meshRef}>
-//       <boxGeometry args={[1, 1, 1]} />
-//       <meshStandardMaterial color="hotpink" />
-//     </mesh>
-//   );
-// }
-
-// export default function App() {
-//   return (
-//     <div style={{ width: '100vw', height: '100vh' }}>
-//       <Canvas>
-//         <PerspectiveCamera makeDefault position={[0, 0, 8]} />
-//         <ambientLight intensity={0.5} />
-//         <directionalLight position={[10, 10, 5]} intensity={1} />
-//         <MovingCube />
-//         <OrbitControls />
-//       </Canvas>
-//     </div>
-//   );
-// }
-
-////////////////////////////////////////
-// Simple Cube array
-
-// import React, { useRef } from 'react';
-// import { Canvas, useFrame } from '@react-three/fiber';
-// import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-
-
-// const cubePositions = [
-//   { id: 1, x: 0, y: 2, z: 1 },
-//   { id: 2, x: -2, y: 1, z: 0 },
-//   { id: 3, x: 0,  y: 0, z: 0 },
-//   { id: 4, x: 2,  y: -1, z: 0 },
-//   { id: 5, x: 4,  y: 0, z: 0 },
-// ];
-
-// function Cube({ position }) {
-//   return (
-//     <mesh position={position}>
-//       <boxGeometry args={[1, 1, 1]} />
-//       <meshStandardMaterial color="cyan" />
-//     </mesh>
-//   );
-// }
-
-// function MovingCube() {
-//   const meshRef = useRef();
-
-//   useFrame((state) => {
-//     // We use the clock's elapsed time to move the cube
-//     // Math.sin oscillates between -1 and 1, creating a back-and-forth movement
-//     const t = state.clock.getElapsedTime();
-//     meshRef.current.position.x = Math.sin(t) * 3; // Moves between -3 and +3 on the X-axis
-//   });
-
-//   return (
-//     <mesh ref={meshRef}>
-//       <boxGeometry args={[1, 1, 1]} />
-//       <meshStandardMaterial color="hotpink" />
-//     </mesh>
-//   );
-// }
-
-// function MovingCube2() {
-//   const meshRef = useRef();
-
-//   useFrame((state) => {
-//     // We use the clock's elapsed time to move the cube
-//     // Math.sin oscillates between -1 and 1, creating a back-and-forth movement
-//     const t = state.clock.getElapsedTime();
-//     meshRef.current.position.x = Math.sin(t-1) * 3; // Moves between -3 and +3 on the X-axis
-//   });
-
-//   return (
-//     <mesh ref={meshRef}>
-//       <boxGeometry args={[1, 1, 1]} />
-//       <meshStandardMaterial color="hotpink" />
-//     </mesh>
-//   );
-// }
-
-// export default function App() {
-//   return (
-//     <div style={{ width: '100vw', height: '100vh' }}>
-//       <Canvas>
-//         <ambientLight intensity={0.5} />
-//         {cubePositions.map((cube) => (
-//           <Cube 
-//             key={cube.id} 
-//             position={[cube.x, cube.y, cube.z]} 
-//           />
-//         ))}
-//         <OrbitControls />
-//       </Canvas>
-//     </div>
-//   );
-// }
-
-
-
-
-
-
-/////////////////////////////////////////
-//
-//  Simple window that gives count when clicked
-//
-/////////////////////////////////////////
-
-
-// // import React from "react";
-// // import "./style.css";
-// import React, { useState } from "react";
-
-// export default function App() {
-//   // Allocate tracked memory. Initial state is 0.
-//   const [number, setNumber] = useState(0);
-
-//   // An internal execution function to mutate state
-//   function handleIncrement() {
-//     setNumber(number + 1); 
-//   }
-
-//   return (
-//     <div style={{ padding: "20px" }}>
-//       {/* 1. Display the state variable */}
-//       <h1>The count is: {number}</h1>
-
-//       {/* 2. Bind the execution function to a user event */}
-//       <button onClick={handleIncrement}>
-//         Change Number
-//       </button>
-//     </div>
-//   );
-// }
-
-////////////////////////////////////////////////////
-////////////////////////////////////////////////////
-
-//           Default App that came with it        //
-
-////////////////////////////////////////////////////
-////////////////////////////////////////////////////
-
-
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from './assets/vite.svg'
-// import heroImg from './assets/hero.png'
-// import './App.css'
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <section id="center">
-//         <div className="hero">
-//           <img src={heroImg} className="base" width="170" height="179" alt="" />
-//           <img src={reactLogo} className="framework" alt="React logo" />
-//           <img src={viteLogo} className="vite" alt="Vite logo" />
-//         </div>
-//         <div>
-//           <h1>Get started</h1>
-//           <p>
-//             Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-//           </p>
-//         </div>
-//         <button
-//           type="button"
-//           className="counter"
-//           onClick={() => setCount((count) => count + 1)}
-//         >
-//           Count is {count}
-//         </button>
-//       </section>
-
-//       <div className="ticks"></div>
-
-//       <section id="next-steps">
-//         <div id="docs">
-//           <svg className="icon" role="presentation" aria-hidden="true">
-//             <use href="/icons.svg#documentation-icon"></use>
-//           </svg>
-//           <h2>Documentation</h2>
-//           <p>Your questions, answered</p>
-//           <ul>
-//             <li>
-//               <a href="https://vite.dev/" target="_blank">
-//                 <img className="logo" src={viteLogo} alt="" />
-//                 Explore Vite
-//               </a>
-//             </li>
-//             <li>
-//               <a href="https://react.dev/" target="_blank">
-//                 <img className="button-icon" src={reactLogo} alt="" />
-//                 Learn more
-//               </a>
-//             </li>
-//           </ul>
-//         </div>
-//         <div id="social">
-//           <svg className="icon" role="presentation" aria-hidden="true">
-//             <use href="/icons.svg#social-icon"></use>
-//           </svg>
-//           <h2>Connect with us</h2>
-//           <p>Join the Vite community</p>
-//           <ul>
-//             <li>
-//               <a href="https://github.com/vitejs/vite" target="_blank">
-//                 <svg
-//                   className="button-icon"
-//                   role="presentation"
-//                   aria-hidden="true"
-//                 >
-//                   <use href="/icons.svg#github-icon"></use>
-//                 </svg>
-//                 GitHub
-//               </a>
-//             </li>
-//             <li>
-//               <a href="https://chat.vite.dev/" target="_blank">
-//                 <svg
-//                   className="button-icon"
-//                   role="presentation"
-//                   aria-hidden="true"
-//                 >
-//                   <use href="/icons.svg#discord-icon"></use>
-//                 </svg>
-//                 Discord
-//               </a>
-//             </li>
-//             <li>
-//               <a href="https://x.com/vite_js" target="_blank">
-//                 <svg
-//                   className="button-icon"
-//                   role="presentation"
-//                   aria-hidden="true"
-//                 >
-//                   <use href="/icons.svg#x-icon"></use>
-//                 </svg>
-//                 X.com
-//               </a>
-//             </li>
-//             <li>
-//               <a href="https://bsky.app/profile/vite.dev" target="_blank">
-//                 <svg
-//                   className="button-icon"
-//                   role="presentation"
-//                   aria-hidden="true"
-//                 >
-//                   <use href="/icons.svg#bluesky-icon"></use>
-//                 </svg>
-//                 Bluesky
-//               </a>
-//             </li>
-//           </ul>
-//         </div>
-//       </section>
-
-//       <div className="ticks"></div>
-//       <section id="spacer"></section>
-//     </>
-//   )
-// }
-
-// export default App
+// ─── Styles ────────────────────────────────────────────────────────────────
+const styles = {
+  page: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: '100vw',
+    height: '100vh',
+    background: '#111',
+    color: '#eee',
+    fontFamily: 'monospace',
+    boxSizing: 'border-box',
+    padding: '20px',
+    gap: '20px',
+  },
+  leftPanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    width: '320px',
+    flexShrink: 0,
+  },
+  rightPanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    flex: 1,
+  },
+  card: {
+    background: '#1a1a1a',
+    border: '1px solid #333',
+    borderRadius: '8px',
+    padding: '16px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
+  },
+  label: {
+    fontSize: '12px',
+    color: '#888',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+  },
+  input: {
+    background: '#222',
+    border: '1px solid #444',
+    borderRadius: '4px',
+    color: '#eee',
+    padding: '8px 10px',
+    fontSize: '14px',
+    outline: 'none',
+  },
+  enterBtn: {
+    background: '#0ff',
+    color: '#000',
+    border: 'none',
+    borderRadius: '4px',
+    padding: '8px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    fontFamily: 'monospace',
+  },
+  addressList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+  },
+  addressChip: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    background: '#222',
+    border: '1px solid #333',
+    borderRadius: '4px',
+    padding: '6px 10px',
+    fontSize: '12px',
+  },
+  removeBtn: {
+    background: 'none',
+    border: 'none',
+    color: '#f66',
+    cursor: 'pointer',
+    fontSize: '12px',
+    padding: '0 4px',
+  },
+  passengerRow: {
+    display: 'flex',
+    gap: '8px',
+  },
+  passengerBtn: {
+    width: '40px',
+    height: '40px',
+    border: '1px solid #0ff',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    fontFamily: 'monospace',
+    fontSize: '16px',
+  },
+  algoBtn: {
+    background: '#1a1a1a',
+    border: '1px solid #0ff',
+    color: '#0ff',
+    borderRadius: '6px',
+    padding: '12px',
+    cursor: 'pointer',
+    fontFamily: 'monospace',
+    fontSize: '13px',
+  },
+  routeHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  weightBadge: {
+    background: '#222',
+    border: '1px solid #444',
+    borderRadius: '4px',
+    padding: '4px 10px',
+    fontSize: '12px',
+    color: '#0ff',
+  },
+  placeholder: {
+    color: '#555',
+    fontSize: '13px',
+    fontStyle: 'italic',
+  },
+  routeStop: {
+    display: 'flex',
+    gap: '12px',
+    alignItems: 'flex-start',
+    padding: '8px 0',
+    borderBottom: '1px solid #222',
+  },
+  stopNumber: {
+    background: '#0ff',
+    color: '#000',
+    borderRadius: '50%',
+    width: '22px',
+    height: '22px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '11px',
+    fontWeight: 'bold',
+    flexShrink: 0,
+  },
+  stopAddress: {
+    fontSize: '13px',
+    color: '#eee',
+  },
+  stopCoords: {
+    fontSize: '11px',
+    color: '#555',
+    marginTop: '2px',
+  },
+  stopError: {
+    fontSize: '11px',
+    color: '#f66',
+    marginTop: '2px',
+  },
+  batteryRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    fontSize: '14px',
+    padding: '4px 0',
+  },
+  error: {
+    color: '#f66',
+    fontSize: '13px',
+    margin: 0,
+  },
+};

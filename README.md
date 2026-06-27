@@ -1,32 +1,15 @@
-##
-setup using 
-npm install
-and 
-npm install three @react-three/fiber @react-three/drei
-then 
-npm run dev
-all in CMD PRMT
-use 
-code .
-to open vscode and make edits to this project
-server will run on 
-http://localhost:5173/
-##
+## Right now this is setup to run locally with 100 test addresses and a simplified backend c++ engine.
 
+## In order to run this repo you will need to first clone the repo to your local drive
+## =============FYI this repo is only suitiable for Windows systems at this time=================
 
-# React + Vite
+## Open up a terminal instance (CMDPROMT) navigate to the middleware server directory {repo root directory}\Test
+## On first boot you will need to install dependencies so run "install npm"
+## After needed dependancies are installed use the command "node app.js" to host the middleware server to http://localhost:3000
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Open up a second terminal instance (CMDPROMT) navigate to the frontend server directory {repo root directory}\
+## On first boot you will need to install dependencies so run "install npm"
+## After needed dependancies are installed use the command "npm run dev" to initialize the front end server
+## The frontend server will host on http://localhost:5173/
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## GUI should be self explanitory though some functionality is not entirely functional at this time. 

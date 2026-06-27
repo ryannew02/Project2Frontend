@@ -1,80 +1,105 @@
-
-
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
 const cors = require('cors');
+const path = require('path');
+const { exec, spawn } = require('child_process');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const app = express();
+const port = process.env.PORT || 3000;
 
-var app = express();
-
-app.use(cors({
-  origin: '*'
-}));
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-app.use(logger('dev'));
+app.use(cors({ origin: '*' }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// ─── Debug landing page ────────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.send(`
+    <html>
+      <body style="font-family: monospace; padding: 30px; background: #969494; color: rgb(1, 65, 65);">
+        <h2>Server is running</h2>
+        <p><b>Port:</b> ${port}</p>
+        <p><b>Time:</b> ${new Date().toLocaleString()}</p>
+        <hr style="border-color: #333;" />
+        <h3>Available Routes</h3>
+        <ul>
+          <li><a href="/api/random-array" style="color:#0ff;">/api/random-array</a> — runs C++ binary, returns float array</li>
+          <li><a href="/api/status" style="color:#0ff;">/api/status</a> — server health check</li>
+        </ul>
+        <hr style="border-color: #333;" />
+        <h3>C++ Binary</h3>
+        <p><b>Expected path:</b> ${path.join(__dirname, 'Backend', 'build', 'dataStructure.exe')}</p>
+      </body>
+    </html>
+  `);
+});
 
+// ─── Health check ──────────────────────────────────────────────────────────
+app.get('/api/status', (req, res) => {
+  res.json({
+    status: 'ok',
+    uptime: process.uptime().toFixed(2) + 's',
+    time: new Date().toISOString(),
+    port,
+  });
+});
 
-
-const { exec } = require('child_process');
-
-// Create an API endpoint for React to fetch from
+// ─── Main data route ───────────────────────────────────────────────────────
+//This calls the C source file 
 app.get('/api/random-array', (req, res) => {
-  
-  // Execute the compiled C++ program
-  exec(path.join(__dirname, 'Backend', 'build', 'dataStructure'), (error, stdout, stderr) => {
+  const binaryPath = path.join(__dirname, 'Backend', 'build', 'dataStructure.exe');
+
+  exec(binaryPath, (error, stdout, stderr) => {
     if (error) {
-      console.error(`Execution error: ${error}`);
-      return res.status(500).send('Error running C++ code');
+      console.error(`Exec error: ${error.message}`);
+      return res.status(500).json({ error: 'Failed to run C++ binary', detail: error.message });
     }
-    
+    if (stderr) {
+      console.warn(`C++ stderr: ${stderr}`);
+    }
+
     try {
-      // stdout contains the printed output from C++
-      // We parse the string "[5, 12...]" into an actual JavaScript array
       const dataArray = JSON.parse(stdout);
-      
-      // Send the array to React
-      res.json(dataArray); 
+      console.log(`Served ${dataArray.length} values`);
+      res.json(dataArray);
     } catch (parseError) {
-      res.status(500).send('Error parsing C++ output');
+      console.error(`Parse error: ${parseError.message}`);
+      res.status(500).json({ error: 'Failed to parse C++ output', detail: parseError.message });
     }
   });
 });
 
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+//Testing communication
+app.post('/api/route', (req, res) => {
+  const payload = JSON.stringify(req.body);
+  console.log('Sending to C++:', payload);
+
+  const binaryPath = path.join(__dirname, 'Backend', 'build', 'dataStructure.exe');
+  const proc = spawn(binaryPath);
+
+  proc.stdin.write(payload);
+  proc.stdin.end();
+
+  let output = '';
+  proc.stdout.on('data', (chunk) => { output += chunk; });
+  proc.stderr.on('data', (chunk) => { console.error('C++ stderr:', chunk.toString()); });
+
+proc.stdout.on('end', () => {
+  console.log('C++ returned:', output);
+  try {
+    const parsed = JSON.parse(output);
+    parsed.algorithm = req.body.algorithm;
+    res.json(parsed);
+  } catch (e) {
+    res.status(500).json({ error: 'Parse failed', raw: output });
+  }
+});
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// ─── 404 fallback ─────────────────────────────────────────────────────────
+app.use((req, res) => {
+  res.status(404).json({ error: `Route not found: ${req.method} ${req.path}` });
+});
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-})
-
-const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });
 
 module.exports = app;
