@@ -31,7 +31,6 @@ std::map<std::string, Address> loadCSV(const std::string& filepath) {
         // Split on first two commas for lat,lon then the rest is the address
         std::stringstream ss(line);
         std::string latStr, lonStr, address;
-
         std::getline(ss, latStr, ',');
         std::getline(ss, lonStr, ',');
         std::getline(ss, address);  // rest of line
@@ -109,52 +108,56 @@ int main() {
     std::map<std::string, Address> addressMap = loadCSV("Backend/data/addresses.csv");
     std::cerr << "Loaded " << addressMap.size() << " addresses from CSV" << std::endl;
 
+    std::string input;
     // Read incoming JSON from Node
-    std::string input, line;
-    while (std::getline(std::cin, line)) input += line;
+    while(std::getline(std::cin, input))
+    {    
+        if (input.empty()) continue;
 
-    std::vector<std::string> requestedAddresses = getStringArray(input, "addresses");
-    std::string passengers = getStringValue(input, "passengers");
+        std::vector<std::string> requestedAddresses = getStringArray(input, "addresses");
+        std::string passengers = getStringValue(input, "passengers");
 
-    // Look up each address and build response
-    std::string foundJson = "[";
-    double totalDistance = 0.0;
-    Address prev;
-    bool hasPrev = false;
+        // Look up each address and build response
+        std::string foundJson = "[";
+        double totalDistance = 0.0;
+        Address prev;
+        bool hasPrev = false;
 
-    for (size_t i = 0; i < requestedAddresses.size(); i++) {
-        const std::string& req = requestedAddresses[i];
+        for (size_t i = 0; i < requestedAddresses.size(); i++) {
+            const std::string& req = requestedAddresses[i];
 
-        if (addressMap.count(req)) {
-            Address& a = addressMap[req];
-            std::cerr << "Found: " << req << " (" << a.lat << ", " << a.lon << ")" << std::endl;
+            if (addressMap.count(req)) {
+                Address& a = addressMap[req];
 
-            if (hasPrev) {
-                totalDistance += haversine(prev.lat, prev.lon, a.lat, a.lon);
+                if (hasPrev) {
+                    totalDistance += haversine(prev.lat, prev.lon, a.lat, a.lon);
+                }
+                prev = a;
+                hasPrev = true;
+
+                foundJson += "{\"address\":\"" + a.fullAddress + "\","
+                        + "\"lat\":" + std::to_string(a.lat) + ","
+                        + "\"lon\":" + std::to_string(a.lon) + "}";
+            } else {
+                std::cerr << "NOT FOUND: " << req << std::endl;
+                foundJson += "{\"address\":\"" + req + "\",\"lat\":0,\"lon\":0,\"error\":\"not found\"}";
             }
-            prev = a;
-            hasPrev = true;
 
-            foundJson += "{\"address\":\"" + a.fullAddress + "\","
-                       + "\"lat\":" + std::to_string(a.lat) + ","
-                       + "\"lon\":" + std::to_string(a.lon) + "}";
-        } else {
-            std::cerr << "NOT FOUND: " << req << std::endl;
-            foundJson += "{\"address\":\"" + req + "\",\"lat\":0,\"lon\":0,\"error\":\"not found\"}";
+            if (i < requestedAddresses.size() - 1) foundJson += ",";
         }
+        foundJson += "]";
 
-        if (i < requestedAddresses.size() - 1) foundJson += ",";
+        // Build response
+        std::string response = "{";
+        response += "\"status\":\"ok\",";
+        response += "\"passengers\":" + passengers + ",";
+        response += "\"total_distance_miles\":" + std::to_string(totalDistance) + ",";
+        response += "\"route\":" + foundJson;
+        response += "}";
+
+        //Pipe output and clean up buffer for reuse
+        std::cout << response << "\n";
+        std::cout.flush();
     }
-    foundJson += "]";
-
-    // Build response
-    std::string response = "{";
-    response += "\"status\":\"ok\",";
-    response += "\"passengers\":" + passengers + ",";
-    response += "\"total_distance_miles\":" + std::to_string(totalDistance) + ",";
-    response += "\"route\":" + foundJson;
-    response += "}";
-
-    std::cout << response << std::endl;
     return 0;
 }
