@@ -71,7 +71,10 @@ app.get('/api/status', (req, res) => {
 
 //Start C++ Source Engine and prepare it for Pipeing
 //builds file path and starts(spawn()) the source engine backround (proc)ess.
-const binaryPath = path.join(__dirname, 'Backend', 'build', 'dataStructure.exe');
+
+//const binaryPath = path.join(__dirname, 'Backend', 'build', 'dataStructure.exe');//Windows path build, for local server uncomment this line
+const binaryPath = path.join(__dirname, 'Backend', 'build', 'dataStructure');//Linux path build, for railroad hosted server uncomment this line
+
 const cppProcess = spawn(binaryPath);
 let outputBuffer = '';
 cppProcess.stderr.on('data', (chunk) => {
