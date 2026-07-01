@@ -34,7 +34,7 @@ export default function App() {
     setResult(null);
 
     try {
-      const res = await fetch('https://project2frontend-production.up.railway.app/api/route', {
+      const res = await fetch('https://oxygen-acetone-tall.ngrok-free.dev', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ addresses, passengers, algorithm }),
