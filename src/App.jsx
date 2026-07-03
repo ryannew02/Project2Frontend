@@ -4,7 +4,7 @@ const WEIGHT_PER_PASSENGER = 190; // lbs average
 
 export default function App() {
   const [addressInput, setAddressInput] = useState('');
-  const [addresses, setAddresses] = useState([]);
+  const [addresses, setAddresses] = useState(["Brightline Orlando Station"]);
   const [passengers, setPassengers] = useState(1);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -225,7 +225,7 @@ export default function App() {
               <div style={styles.batteryRow}>
               <span>eVTOL Assigned</span>
               {/*other vehicle availble in production at this time EHang EH216-S (2 pax, 62mph, 22mpc), Wisk Generation 6(4 pax, 126mph, 90mpc), AutoFlight Prosperity I (4 pax, 124mph, 155 miles)*/}
-              {(result.passengers < 2 & result.total_distance_miles < 11) ? <span>EHang EH216-S</span> : (result.total_distance_miles < 45) ? <span>Wisk Generation 6</span> : <span>AutoFlight Prosperity I</span>}
+              {(result.passengers < 3 & result.total_distance_miles < 11) ? <span>EHang EH216-S</span> : (result.total_distance_miles < 45) ? <span>Wisk Generation 6</span> : <span>AutoFlight Prosperity I</span>}
               </div>
               <div style={styles.batteryRow}>
                 <span>Est. Weight</span>
