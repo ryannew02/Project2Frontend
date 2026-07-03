@@ -10,12 +10,32 @@ export default function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [devMode, setDevMode] = useState(false);
+  // Too add, Addresses for Vertiport locations, Brightline/MCO airport, one at I-4, Wekiwa Springs, FL 32779, and one at Turkey lake turnpike rest stop
+  const testAddresses = 
+  [
+    '10236 Willowemac Ct, Unincorporated, FL 32817',
+     '1350 Sasoon Ave, Unincorporated, FL 32803',
+      '5884 Grand Canyon Dr, Unincorporated, FL 32810',
+       '5641 Curlew Dr, Unincorporated, FL 32812',
+        '2280 Pebblewood Dr, Apopka, FL 32703',
+         '504 Lake Bridge Ln, Apartment 1527, Apopka, FL 32703',
+          '504 Lake Bridge Ln, Apartment 1527, Apopka, FL 32703',
+           '5398 N Orange Blossom Trl, Orlando, FL 32810',
+            '4451 Twinview Ln, Orlando, FL 32814',
+             '1189 Monteagle Cir, Unincorporated, FL 32712'
+            ]
   // Add address to the list
   const handleAddAddress = () => {
     const trimmed = addressInput.trim();
     if (!trimmed) return;
     setAddresses([...addresses, trimmed]);
     setAddressInput('');
+  };
+  
+  const handleDevAddAddress = () => {
+    const devTestAddress = testAddresses[Math.floor(Math.random() * testAddresses.length)]
+    setAddresses([...addresses, devTestAddress]);
+    setAddressInput(devTestAddress);
   };
 
   // Remove an address from the list
@@ -60,6 +80,7 @@ export default function App() {
         <div style={styles.card}>
           {devMode && <div style={styles.label}> Dev Mode Enabled </div>}
           <button style={styles.devButton} onClick={() => setDevMode(!devMode)}>Address</button>
+          {!devMode ?
           <input
             style={styles.input}
             type="text"
@@ -68,9 +89,27 @@ export default function App() {
             onChange={(e) => setAddressInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAddAddress()}
           />
+          :
+          <input
+            style={styles.input}
+            type="text"
+            placeholder="Dev Mode Enabled..."
+            value={addressInput}
+            readOnly
+            onKeyDown={(e) => e.key === 'Press to Generate Address' && handleDevAddAddress()}
+            />
+            }
+          {!devMode ?
           <button style={styles.enterBtn} onClick={handleAddAddress}>
             Enter
           </button>
+          :
+          <button style={styles.enterBtn} onClick={handleDevAddAddress}>
+            Enter
+          </button> 
+          }
+
+
 
           {/* Address list preview */}
           {addresses.length > 0 && (
@@ -118,10 +157,10 @@ export default function App() {
 
         <button
           style={styles.algoBtn}
-          onClick={() => handleCalculate('treap')}
+          onClick={() => handleCalculate('trie')}
           disabled={loading}
         >
-          {loading ? 'Calculating...' : 'Use Treap to Calculate'}
+          {loading ? 'Calculating...' : 'Use Trie to Calculate'}
         </button>
 
         {error && <p style={styles.error}>{error}</p>}
