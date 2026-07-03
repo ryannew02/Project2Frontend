@@ -58,7 +58,7 @@ export default function App() {
 
         {/* Address Input */}
         <div style={styles.card}>
-          <button style={styles.label} onClick={() => devMode = !devMode}>Address</button>
+          <button style={styles.devButton} onClick={() => devMode = !devMode}>Address</button>
           {devMode && <div style={styles.label}> Dev Mode Enabled </div>}
           <input
             style={styles.input}
@@ -216,6 +216,11 @@ const styles = {
     color: '#888',
     textTransform: 'uppercase',
     letterSpacing: '1px',
+    backround: 'none',
+    border: 'none',
+    padding: 0,
+    font: 'inherit',
+    cursor: 'pointer',
   },
 
   page: {
