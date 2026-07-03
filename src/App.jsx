@@ -215,7 +215,7 @@ const styles = {
     color: '#888',
     textTransform: 'uppercase',
     letterSpacing: '1px',
-  }
+  },
 
   page: {
     display: 'flex',
