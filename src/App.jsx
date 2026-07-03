@@ -216,11 +216,13 @@ const styles = {
     color: '#888',
     textTransform: 'uppercase',
     letterSpacing: '1px',
-    backround: 'none',
+    background: 'none',
     border: 'none',
     padding: 0,
     font: 'inherit',
     cursor: 'pointer',
+    fontFamily: 'monospace',
+    textAlign: 'left',
   },
 
   page: {
