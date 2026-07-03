@@ -185,6 +185,10 @@ export default function App() {
                 <span>Est. Weight</span>
                 <span>{estimatedWeight} lbs</span>
               </div>
+              <div style={styles.batteryRow}>
+              <span>Battery Charge Neccessary</span>
+              <span>TBD KWh</span>
+              </div>
               <div style={{ ...styles.batteryRow, borderTop: '1px solid #333', paddingTop: '10px', marginTop: '10px' }}>
                 <span>Algorithm Used</span>
                 <span style={{ color: '#0ff' }}>{result.algorithm || 'N/A'}</span>
