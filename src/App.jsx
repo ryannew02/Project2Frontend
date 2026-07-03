@@ -212,6 +212,7 @@ export default function App() {
 // ─── Styles ────────────────────────────────────────────────────────────────
 const styles = {
   devButton: {
+    font: 'inherit',
     fontSize: '12px',
     color: '#888',
     textTransform: 'uppercase',
@@ -219,8 +220,7 @@ const styles = {
     background: 'none',
     border: 'none',
     padding: 0,
-    font: 'inherit',
-    cursor: 'pointer',
+    cursor: 'help',
     fontFamily: 'monospace',
     textAlign: 'left',
   },
