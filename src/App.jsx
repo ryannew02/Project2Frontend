@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
 const WEIGHT_PER_PASSENGER = 190; // lbs average
-let devMode = false;
 
 export default function App() {
   const [addressInput, setAddressInput] = useState('');
@@ -10,6 +9,7 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [devMode, setDevMode] = useState(false);
   // Add address to the list
   const handleAddAddress = () => {
     const trimmed = addressInput.trim();
@@ -58,7 +58,7 @@ export default function App() {
 
         {/* Address Input */}
         <div style={styles.card}>
-          <button style={styles.devButton} onClick={() => devMode = !devMode}>Address</button>
+          <button style={styles.devButton} onClick={() => setDevMode(!devMode)}>Address</button>
           {devMode && <div style={styles.label}> Dev Mode Enabled </div>}
           <input
             style={styles.input}
