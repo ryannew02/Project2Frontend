@@ -58,8 +58,8 @@ export default function App() {
 
         {/* Address Input */}
         <div style={styles.card}>
-          <button style={styles.devButton} onClick={() => setDevMode(!devMode)}>Address</button>
           {devMode && <div style={styles.label}> Dev Mode Enabled </div>}
+          <button style={styles.devButton} onClick={() => setDevMode(!devMode)}>Address</button>
           <input
             style={styles.input}
             type="text"
