@@ -58,7 +58,8 @@ export default function App() {
 
         {/* Address Input */}
         <div style={styles.card}>
-          <label style={styles.label}>Address</label>
+          <button style={styles.label} onClick={() => devMode = !devMode}>Address</button>
+          {devMode && <div style={styles.label}> Dev Mode Enabled </div>}
           <input
             style={styles.input}
             type="text"
@@ -87,8 +88,8 @@ export default function App() {
           )}
 
           {/* Passenger selector */}
-          <button style={styles.label} onClick={() => devMode = !devMode}>Number of Passengers</button>
-          {devMode && <div style={styles.label}> Dev Mode Enabled </div>}
+          <label style={styles.label}>Number of Passengers</label>
+          
           <div style={styles.passengerRow}>
             {[1, 2, 3, 4].map((n) => (
               <button
