@@ -9,7 +9,7 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-
+  const devMode = false;
   // Add address to the list
   const handleAddAddress = () => {
     const trimmed = addressInput.trim();
@@ -87,7 +87,8 @@ export default function App() {
           )}
 
           {/* Passenger selector */}
-          <label style={styles.label}>Number of Passengers</label>
+          <button style={styles.label} onClick={() => devMode = !devMode}>Number of Passengers</button>
+          <div style={styles.label}> Dev Mode Enabled </div>
           <div style={styles.passengerRow}>
             {[1, 2, 3, 4].map((n) => (
               <button
@@ -165,7 +166,7 @@ export default function App() {
 
         {/* Battery info */}
         <div style={styles.card}>
-          <label style={styles.label}>Battery Charge Needed</label>
+          <label style={styles.label}>Dispatch Summary</label>
           {!result && (
             <p style={styles.placeholder}>
               Battery estimate will appear after calculating a route
@@ -184,7 +185,7 @@ export default function App() {
               <div style={styles.batteryRow}>
               <span>eVTOL Assigned</span>
               {/*other vehicle availble in production at this time EHang EH216-S (2 pax, 62mph, 22mpc), Wisk Generation 6(4 pax, 126mph, 90mpc), AutoFlight Prosperity I (4 pax, 124mph, 155 miles)*/}
-              {(result.passengers > 2 & result.total_distance_miles < 11) ? <span>EHang EH216-S</span> : <span>Wisk Generation 6</span>}
+              {(result.passengers < 2 & result.total_distance_miles < 11) ? <span>EHang EH216-S</span> : (result.total_distance_miles < 45) ? <span>Wisk Generation 6</span> : <span>AutoFlight Prosperity I</span>}
               </div>
               <div style={styles.batteryRow}>
                 <span>Est. Weight</span>
@@ -209,6 +210,13 @@ export default function App() {
 
 // ─── Styles ────────────────────────────────────────────────────────────────
 const styles = {
+  devButton: {
+    fontSize: '12px',
+    color: '#888',
+    textTransform: 'uppercase',
+    letterSpacing: '1px',
+  }
+
   page: {
     display: 'flex',
     flexDirection: 'row',
