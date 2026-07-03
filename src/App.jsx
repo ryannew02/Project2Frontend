@@ -182,6 +182,11 @@ export default function App() {
                 <span>{result.passengers}</span>
               </div>
               <div style={styles.batteryRow}>
+              <span>eVTOL Assigned</span>
+              {/*other vehicle availble in production at this time EHang EH216-S (2 pax, 62mph, 22mpc), Wisk Generation 6(4 pax, 126mph, 90mpc), AutoFlight Prosperity I (4 pax, 124mph, 155 miles)*/}
+              {(result.passengers > 2 & result.total_distance_miles < 11) ? <span>EHang EH216-S</span> : <span>Wisk Generation 6</span>}
+              </div>
+              <div style={styles.batteryRow}>
                 <span>Est. Weight</span>
                 <span>{estimatedWeight} lbs</span>
               </div>
