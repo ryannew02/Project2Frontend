@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const WEIGHT_PER_PASSENGER = 190; // lbs average
+let devMode = false;
 
 export default function App() {
   const [addressInput, setAddressInput] = useState('');
@@ -9,7 +10,6 @@ export default function App() {
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const devMode = false;
   // Add address to the list
   const handleAddAddress = () => {
     const trimmed = addressInput.trim();
@@ -88,7 +88,7 @@ export default function App() {
 
           {/* Passenger selector */}
           <button style={styles.label} onClick={() => devMode = !devMode}>Number of Passengers</button>
-          <div style={styles.label}> Dev Mode Enabled </div>
+          {devMode && <div style={styles.label}> Dev Mode Enabled </div>}
           <div style={styles.passengerRow}>
             {[1, 2, 3, 4].map((n) => (
               <button
