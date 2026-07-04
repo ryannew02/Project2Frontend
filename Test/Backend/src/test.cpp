@@ -11,6 +11,10 @@ struct Address {
     double lat;
     double lon;
     std::string fullAddress;
+    std::string addressNumber;
+    std::string streetName;
+    std::string zipCode;
+    std::string city;
 };
 
 // ─── CSV Parser ────────────────────────────────────────────────────────────
@@ -30,8 +34,9 @@ std::map<std::string, Address> loadCSV(const std::string& filepath) {
 
         // Split on first two commas for lat,lon then the rest is the address
         std::stringstream ss(line);
-        std::string latStr, lonStr, address;
+        std::string latStr, lonStr, address,addressNumber, zipCode;
         std::getline(ss, latStr, ',');
+        std::getline(ss, lonStr, ',');
         std::getline(ss, lonStr, ',');
         std::getline(ss, address);  // rest of line
 
