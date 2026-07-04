@@ -4,7 +4,7 @@ const WEIGHT_PER_PASSENGER = 190; // lbs average
 
 export default function App() {
   const [addressInput, setAddressInput] = useState('');
-  const [addresses, setAddresses] = useState(["Brightline Orlando Station"]);
+  const [addresses, setAddresses] = useState(["10236 Willowemac Ct, Unincorporated, FL 32817"]);
   const [passengers, setPassengers] = useState(1);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
