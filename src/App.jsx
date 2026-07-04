@@ -38,6 +38,12 @@ export default function App() {
     setAddressInput(devTestAddress);
   };
 
+  const addFinalAddress = () => {
+    setAddresses([...addresses, "Brightline Orlando Station"]);
+  };
+
+  
+
   // Remove an address from the list
   const handleRemoveAddress = (index) => {
     setAddresses(addresses.filter((_, i) => i !== index));
