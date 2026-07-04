@@ -60,6 +60,7 @@ export default function App() {
     setResult(null);
 
     try {
+      addFinalAddress()
       const res = await fetch('https://oxygen-acetone-tall.ngrok-free.dev/api/route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -155,7 +156,7 @@ export default function App() {
         {/* Algorithm buttons */}
         <button
           style={styles.algoBtn}
-          onClick={() => handleCalculate('splay')}
+          onClick={() => addFinalAddress() && handleCalculate('splay')}
           disabled={loading}
         >
           {loading ? 'Calculating...' : 'Use Splay Tree to Calculate'}
@@ -163,7 +164,7 @@ export default function App() {
 
         <button
           style={styles.algoBtn}
-          onClick={() => handleCalculate('trie')}
+          onClick={() => addFinalAddress() && handleCalculate('trie')}
           disabled={loading}
         >
           {loading ? 'Calculating...' : 'Use Trie to Calculate'}
