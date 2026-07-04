@@ -4,7 +4,7 @@ const WEIGHT_PER_PASSENGER = 190; // lbs average
 
 export default function App() {
   const [addressInput, setAddressInput] = useState('');
-  const [addresses, setAddresses] = useState(["Brightline Orlando Station"]);
+  const [addresses, setAddresses] = useState([]);
   const [passengers, setPassengers] = useState(1);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
@@ -57,7 +57,7 @@ export default function App() {
       const res = await fetch('https://oxygen-acetone-tall.ngrok-free.dev/api/route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ addresses: [...addresses, "Brightline Orlando Station"], passengers, algorithm }),
+        body: JSON.stringify({ addresses: ["Brightline Orlando Station", ...addresses, "Brightline Orlando Station"], passengers, algorithm }),
       });
       const data = await res.json();
       setResult(data);
@@ -192,7 +192,7 @@ export default function App() {
                   <div>
                     <div style={styles.stopAddress}>{stop.address}</div>
                     {stop.error && (
-                      <div style={styles.stopError}>⚠ Not found in database</div>
+                      <div style={styles.stopError}>Not found in database</div>
                     )}
                     <div style={styles.stopCoords}>
                       {stop.lat !== 0 && `${stop.lat.toFixed(5)}, ${stop.lon.toFixed(5)}`}
