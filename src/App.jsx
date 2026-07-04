@@ -51,6 +51,7 @@ export default function App() {
 
   // Send to backend
   const handleCalculate = async (algorithm) => {
+    addFinalAddress()
     if (addresses.length < 2) {
       setError('Please enter at least 2 addresses');
       return;
@@ -156,7 +157,7 @@ export default function App() {
         {/* Algorithm buttons */}
         <button
           style={styles.algoBtn}
-          onClick={() => addFinalAddress() && handleCalculate('splay')}
+          onClick={() => handleCalculate('splay')}
           disabled={loading}
         >
           {loading ? 'Calculating...' : 'Use Splay Tree to Calculate'}
@@ -164,7 +165,7 @@ export default function App() {
 
         <button
           style={styles.algoBtn}
-          onClick={() => addFinalAddress() && handleCalculate('trie')}
+          onClick={() => handleCalculate('trie')}
           disabled={loading}
         >
           {loading ? 'Calculating...' : 'Use Trie to Calculate'}
