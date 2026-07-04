@@ -38,12 +38,6 @@ export default function App() {
     setAddressInput(devTestAddress);
   };
 
-  const addFinalAddress = () => {
-    setAddresses([...addresses, "Brightline Orlando Station"]);
-  };
-
-  
-
   // Remove an address from the list
   const handleRemoveAddress = (index) => {
     setAddresses(addresses.filter((_, i) => i !== index));
@@ -51,7 +45,6 @@ export default function App() {
 
   // Send to backend
   const handleCalculate = async (algorithm) => {
-    addFinalAddress()
     if (addresses.length < 2) {
       setError('Please enter at least 2 addresses');
       return;
@@ -64,7 +57,7 @@ export default function App() {
       const res = await fetch('https://oxygen-acetone-tall.ngrok-free.dev/api/route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ addresses, passengers, algorithm }),
+        body: JSON.stringify({ addresses: [...addresses, "Brightline Orlando Station"], passengers, algorithm }),
       });
       const data = await res.json();
       setResult(data);
