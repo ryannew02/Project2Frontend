@@ -61,7 +61,6 @@ export default function App() {
     setResult(null);
 
     try {
-      addFinalAddress()
       const res = await fetch('https://oxygen-acetone-tall.ngrok-free.dev/api/route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
