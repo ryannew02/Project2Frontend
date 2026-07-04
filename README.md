@@ -30,3 +30,10 @@
 
 ## ==================Once Application is running=====================
 ## GUI should be self explanitory though some functionality is not entirely functional at this time. 
+
+
+
+## Outside Acknowledgments & Attributions
+## This project was initially bootstrapped using the standard [Vite React Template](https://vitejs.dev/) to set up the build pipeline, local development server, and base CSS variables (`index.css`).
+## Third-party libraries and dependencies (such as React, Ngrok, and styling frameworks) were managed and installed via `npm` (Node Package Manager).
+## Note: All custom application routing, state management, eVTOL layout logic, UI components (`App.js`), and integration with the custom C++ calculation engine are entirely my own original work.
