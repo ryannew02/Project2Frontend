@@ -75,7 +75,11 @@ app.get('/api/status', (req, res) => {
 //const binaryPath = path.join(__dirname, 'Backend', 'build', 'dataStructure.exe');//Windows path build, for local server uncomment this line
 const binaryPath = path.join(__dirname, 'Backend', 'build', 'dataStructure');//Linux path build, for railroad hosted server uncomment this line
 
-const cppProcess = spawn(binaryPath);
+const backendDir = path.join(__dirname, 'Backend');
+const cppProcess = spawn(binaryPath, [], {
+  cwd: backendDir,
+  env: { ...process.env, VAW_DATA_DIR: path.join(backendDir, 'data') }
+});
 let outputBuffer = '';
 cppProcess.stderr.on('data', (chunk) => {
   console.error('C++ stderr:', chunk.toString());
