@@ -196,7 +196,7 @@ DataObject* SplayTree<DataObject, KeyObject>::search(KeyObject& key) {
 		grandparentsChild = parentNode->right == curNode ? this->rotateLeft(parentNode) : this->rotateRight(parentNode);
 	}
 
-	return &(curNode->DataObject);
+	return curNode->dataPtr;
 }
 
 template <typename DataObject, typename KeyObject>

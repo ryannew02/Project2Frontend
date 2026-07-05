@@ -3,4 +3,4 @@
 #For local windows hosting ensure outfile is .exe and no need to run mkdir
 Default: src/*.cpp
 	mkdir -p build
-	g++ src/*.cpp -o build/dataStructure
+	g++ src/main.cpp -o build/dataStructure
