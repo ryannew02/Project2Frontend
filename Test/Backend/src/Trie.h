@@ -58,6 +58,7 @@ bool Trie<DataObject>::insert(DataObject* dataPtr, string& key) {
 			parent->dataPtr = dataPtr;
 		}
 	}
+	return true;
 }
 
 template <typename DataObject>

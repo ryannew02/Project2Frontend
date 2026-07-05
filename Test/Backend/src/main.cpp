@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <cstdlib>
 #include <map> //Will need to remove this for final submission when you implement loading of CSV
 #include "SplayTree.h"
 #include "Location.h"
@@ -21,8 +22,11 @@ double haversine(double lat1, double lon1, double lat2, double lon2);
 void runIO(SplayTree<Location, string>& splayTree, Trie<Location>& trieTree);
 
 int main() { 
-	string addressFilepath = "data/addresses.csv";
-	string zipCityFilepath = "data/zip_city.csv";
+    const char* dataDirEnv = getenv("VAW_DATA_DIR");
+    string dataDir = dataDirEnv ? string(dataDirEnv) : "data";
+
+    string addressFilepath = dataDir + "/addresses.csv";
+    string zipCityFilepath = dataDir + "/zip_city.csv";
 	SplayTree<Location, string> splayTree;
 	Trie<Location> trieTree;
 	splayTree = loadSplayCSV(addressFilepath, zipCityFilepath);
@@ -45,6 +49,7 @@ const string& zipFilepath) {
 	if (!zipFile.is_open()) {
     cerr << "FAILED TO OPEN: " << zipFilepath << endl;
 	}
+
 	string line;
 	string zipLine;
 	
@@ -53,6 +58,7 @@ const string& zipFilepath) {
 
 	while (getline(zipFile, zipLine)) {
 		if (zipLine.empty()) continue;
+
 		// Remove carriage return if present
 		if (!zipLine.empty() && zipLine.back() == '\r') zipLine.pop_back();
 
@@ -123,12 +129,13 @@ const string& zipFilepath) {
 	ifstream zipFile(zipFilepath);
 	string line;
 	string zipLine;
-	
+
 	// Skip header
 	getline(zipFile, zipLine);
 
 	while (getline(zipFile, zipLine)) {
 		if (zipLine.empty()) continue;
+
 		// Remove carriage return if present
 		if (!zipLine.empty() && zipLine.back() == '\r') zipLine.pop_back();
 

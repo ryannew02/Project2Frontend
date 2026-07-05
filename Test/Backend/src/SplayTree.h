@@ -73,6 +73,7 @@ bool SplayTree<DataObject, KeyObject>::insert(DataObject* dataPtr, KeyObject& ke
 		SplayNode<DataObject, KeyObject>*& grandparentsChild = ancestors.empty() ? this->head : (ancestors.top()->right == parentNode ? ancestors.top()->right : ancestors.top()->left);
 		grandparentsChild = parentNode->right == newNode ? this->rotateLeft(parentNode) : this->rotateRight(parentNode);
 	}
+	return true;
 }
 
 template <typename DataObject, typename KeyObject>
