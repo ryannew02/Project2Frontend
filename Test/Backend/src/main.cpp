@@ -20,9 +20,9 @@ vector<string> getStringArray(const string& json, const string& key);
 double haversine(double lat1, double lon1, double lat2, double lon2);
 void runIO(SplayTree<Location, string>& splayTree, Trie<Location>& trieTree);
 
-int main() {
-	string addressFilepath = "Test/Backend/data/addresses.csv";
-	string zipCityFilepath = "Test/Backend/data/zip_city.csv";
+int main() { 
+	string addressFilepath = "data/addresses.csv";
+	string zipCityFilepath = "data/zip_city.csv";
 	SplayTree<Location, string> splayTree;
 	Trie<Location> trieTree;
 	splayTree = loadSplayCSV(addressFilepath, zipCityFilepath);
