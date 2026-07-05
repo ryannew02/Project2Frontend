@@ -57,7 +57,7 @@ export default function App() {
       const res = await fetch('https://oxygen-acetone-tall.ngrok-free.dev/api/route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ addresses: ["Brightline Orlando Station", ...addresses, "Brightline Orlando Station"], passengers, algorithm }),
+        body: JSON.stringify({ addresses: [" Brightline Orlando Station", ...addresses, " Brightline Orlando Station"], passengers, algorithm }),
       });
       const data = await res.json();
       setResult(data);
