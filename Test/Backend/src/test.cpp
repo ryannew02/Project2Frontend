@@ -12,13 +12,41 @@ struct Address {
     double lon;
     std::string fullAddress;
     std::string addressNumber;
-    std::string streetName;
-    std::string zipCode;
+    std::string addressName;
+    std::string zip;
     std::string city;
 };
 
 // ─── CSV Parser ────────────────────────────────────────────────────────────
-std::map<std::string, Address> loadCSV(const std::string& filepath) {
+std::map<std::string, std::string> loadZipCity(const std::string& filepath) {
+    std::map<std::string, std::string> zipCityMap;
+    std::ifstream file(filepath);
+    std::string line;
+
+    // Skip header
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        if (line.empty()) continue;
+
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+
+        std::stringstream ss(line);
+        std::string zip;
+        std::string city;
+
+        std::getline(ss, zip, ',');
+        std::getline(ss, city, ',');
+
+        zipCityMap[zip] = city;
+    }
+
+    return zipCityMap;
+}
+
+// ─── CSV Parser ────────────────────────────────────────────────────────────
+std::map<std::string, Address> loadCSV(const std::string& filepath,
+                                       const std::map<std::string, std::string>& zipCityMap) {
     std::map<std::string, Address> addressMap;
     std::ifstream file(filepath);
     std::string line;
@@ -32,26 +60,41 @@ std::map<std::string, Address> loadCSV(const std::string& filepath) {
         // Remove carriage return if present
         if (!line.empty() && line.back() == '\r') line.pop_back();
 
-        // Split on first two commas for lat,lon then the rest is the address
+        // Split CSV columns: lat, lon, addressNumber, addressName, unit, zip
         std::stringstream ss(line);
-        std::string latStr, lonStr, address,addressNumber, zipCode;
+        std::string latStr, lonStr, addressNumber, addressName, unit, zip;
+
         std::getline(ss, latStr, ',');
         std::getline(ss, lonStr, ',');
-        std::getline(ss, lonStr, ',');
-        std::getline(ss, address);  // rest of line
+        std::getline(ss, addressNumber, ',');
+        std::getline(ss, addressName, ',');
+        std::getline(ss, unit, ',');
+        std::getline(ss, zip, ',');
 
-        // Strip surrounding quotes if present
-        if (!address.empty() && address.front() == '"') {
-            address = address.substr(1, address.size() - 2);
-        }
-
+        // Store CSV row values in an Address object
         Address a;
         a.lat = std::stod(latStr);
         a.lon = std::stod(lonStr);
-        a.fullAddress = address;
+        a.addressNumber = addressNumber;
+        a.addressName = addressName;
+        a.zip = zip;
 
-        // Store with lowercase key for easier lookup
-        std::string key = address;
+        if (zipCityMap.count(zip)) {
+            a.city = zipCityMap.at(zip);
+        }
+
+        if (!unit.empty()) {
+
+            a.fullAddress = addressNumber + " " + addressName + " " + unit;
+
+        } else {
+
+            a.fullAddress = addressNumber + " " + addressName;
+
+        }
+
+        // Store address using the display address as the lookup key
+        std::string key = a.fullAddress;
         addressMap[key] = a;
     }
 
@@ -110,7 +153,8 @@ double haversine(double lat1, double lon1, double lat2, double lon2) {
 // ─── Main ─────────────────────────────────────────────────────────────────
 int main() {
     // Load CSV — path is relative to where app.js runs (Test/)
-    std::map<std::string, Address> addressMap = loadCSV("Backend/data/addresses.csv");
+    std::map<std::string, std::string> zipCityMap = loadZipCity("Backend/data/zip_city.csv");
+    std::map<std::string, Address> addressMap = loadCSV("Backend/data/addresses.csv", zipCityMap);
     std::cerr << "Loaded " << addressMap.size() << " addresses from CSV" << std::endl;
 
     std::string input;
@@ -141,6 +185,8 @@ int main() {
                 hasPrev = true;
 
                 foundJson += "{\"address\":\"" + a.fullAddress + "\","
+                        + "\"city\":\"" + a.city + "\","
+                        + "\"zip\":\"" + a.zip + "\","
                         + "\"lat\":" + std::to_string(a.lat) + ","
                         + "\"lon\":" + std::to_string(a.lon) + "}";
             } else {
