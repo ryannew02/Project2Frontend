@@ -10,6 +10,7 @@ export default function App() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [devMode, setDevMode] = useState(false);
+  const [loadTime, setLoadTime] = useState(null);
   // Too add, Addresses for Vertiport locations, Brightline/MCO airport, one at I-4, Wekiwa Springs, FL 32779, and one at Turkey lake turnpike rest stop
   const testAddresses = 
   [
@@ -52,6 +53,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     setResult(null);
+    const startTime = performance.now();
 
     try {
       const res = await fetch('https://oxygen-acetone-tall.ngrok-free.dev/api/route', {
@@ -61,6 +63,7 @@ export default function App() {
       });
       const data = await res.json();
       setResult(data);
+      setLoadTime(performance.now() - startTime);
     } catch (err) {
       setError('Failed to reach server');
     } finally {
@@ -204,7 +207,7 @@ export default function App() {
           )}
         </div>
 
-        {/* Battery info */}
+        {/* Dispatch info */}
         <div style={styles.card}>
           <label style={styles.label}>Dispatch Summary</label>
           {!result && (
@@ -239,6 +242,11 @@ export default function App() {
                 <span>Algorithm Used</span>
                 <span style={{ color: '#0ff' }}>{result.algorithm || 'N/A'}</span>
               </div>
+              {devMode && loadTime !== null && (
+              <div style={styles.batteryRow}>
+                <span>Load Time (Dev)</span>
+                <span style={{ color: '#0ff' }}>{loadTime.toFixed(1)} ms</span>
+              </div>)}
             </div>
           )}
         </div>
