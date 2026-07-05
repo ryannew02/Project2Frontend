@@ -38,7 +38,13 @@ const string& zipFilepath) {
 	SplayTree<Location, string> splayTree;
 	map<string, string> zipCityMap;
 	ifstream file(filepath);
+	if (!file.is_open()) {
+    cerr << "FAILED TO OPEN: " << filepath << endl;
+	}
 	ifstream zipFile(zipFilepath);
+	if (!zipFile.is_open()) {
+    cerr << "FAILED TO OPEN: " << zipFilepath << endl;
+	}
 	string line;
 	string zipLine;
 	
