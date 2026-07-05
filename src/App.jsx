@@ -13,16 +13,16 @@ export default function App() {
   // Too add, Addresses for Vertiport locations, Brightline/MCO airport, one at I-4, Wekiwa Springs, FL 32779, and one at Turkey lake turnpike rest stop
   const testAddresses = 
   [
-    '10236 Willowemac Ct, Unincorporated, FL 32817',
-     '1350 Sasoon Ave, Unincorporated, FL 32803',
-      '5884 Grand Canyon Dr, Unincorporated, FL 32810',
-       '5641 Curlew Dr, Unincorporated, FL 32812',
-        '2280 Pebblewood Dr, Apopka, FL 32703',
-         '504 Lake Bridge Ln, Apartment 1527, Apopka, FL 32703',
-          '504 Lake Bridge Ln, Apartment 1527, Apopka, FL 32703',
-           '5398 N Orange Blossom Trl, Orlando, FL 32810',
-            '4451 Twinview Ln, Orlando, FL 32814',
-             '1189 Monteagle Cir, Unincorporated, FL 32712'
+    '10236 Willowemac Ct',
+     '1350 Sasoon Ave',
+      '5884 Grand Canyon Dr',
+       '5641 Curlew Dr',
+        '2280 Pebblewood Dr',
+         '504 Lake Bridge Ln',
+          '504 Lake Bridge Ln',
+           '5398 N Orange Blossom Trl',
+            '4451 Twinview Ln',
+             '1189 Monteagle Cir'
             ]
   // Add address to the list
   const handleAddAddress = () => {
