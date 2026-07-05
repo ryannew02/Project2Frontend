@@ -7,9 +7,12 @@ using namespace std;
 struct Location {
 	double longitude = 0;
 	double latitude = 0;
-	string address;
-
+    string fullAddress;
+    string addressNumber;
+    string addressName;
+    string zip;
+    string city;
 	Location() {};
-	Location(string address, double longitude, double latitude) : address(address), longitude(longitude), latitude(latitude) {};
+	Location(string address, double longitude, double latitude) : fullAddress(address), longitude(longitude), latitude(latitude) {};
 	
 };
