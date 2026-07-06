@@ -22,12 +22,11 @@ double haversine(double lat1, double lon1, double lat2, double lon2);
 void runIO(SplayTree<Location, string>& splayTree, Trie<Location>& trieTree);
 
 int main() { 
-    string addressFilepath = "data/addresses.csv";
-    string zipCityFilepath = "data/zip_city.csv";
-	SplayTree<Location, string> splayTree;
-	Trie<Location> trieTree;
-	splayTree = loadSplayCSV(addressFilepath, zipCityFilepath);
-	trieTree = loadTrieCSV(addressFilepath, zipCityFilepath);
+    string addressFilepath = "../data/addresses.csv";
+    string zipCityFilepath = "../data/zip_city.csv";
+	SplayTree<Location, string> splayTree = loadSplayCSV(addressFilepath, zipCityFilepath);
+	Trie<Location> trieTree = loadTrieCSV(addressFilepath, zipCityFilepath);
+
 	runIO(splayTree, trieTree);
 	return 0;
 }

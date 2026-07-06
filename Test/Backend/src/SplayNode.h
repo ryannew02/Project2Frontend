@@ -9,4 +9,11 @@ struct SplayNode {
 	SplayNode<DataObject, KeyObject>* right = nullptr;
 
 	SplayNode(DataObject* dataPtr, KeyObject& key) : dataPtr(dataPtr), key(key) {}
+
+	~SplayNode();
 };
+
+template <typename DataObject, typename KeyObject>
+SplayNode<DataObject, KeyObject>::~SplayNode() {
+	delete dataPtr;
+}

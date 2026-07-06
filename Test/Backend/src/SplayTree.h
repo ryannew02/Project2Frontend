@@ -18,9 +18,9 @@ private:
 public:
 	SplayTree();
 	
-	bool insert(DataObject* dataPtr, KeyObject& key);
-	bool remove(KeyObject& key);
-	DataObject* search(KeyObject& key);
+	bool insert(DataObject* dataPtr, KeyObject key);
+	bool remove(KeyObject key);
+	DataObject* search(KeyObject key);
 	bool empty() const;
 	vector<DataObject*> getPreOrder(SplayNode<DataObject, KeyObject>* head = nullptr);
 };
@@ -30,7 +30,7 @@ template <typename DataObject, typename KeyObject>
 SplayTree<DataObject, KeyObject>::SplayTree() {}
 
 template <typename DataObject, typename KeyObject>
-bool SplayTree<DataObject, KeyObject>::insert(DataObject* dataPtr, KeyObject& key) {
+bool SplayTree<DataObject, KeyObject>::insert(DataObject* dataPtr, KeyObject key) {
 	// Create the new node and ancestors stack
 	auto newNode = new SplayNode<DataObject, KeyObject>(dataPtr, key);
 	stack<SplayNode<DataObject, KeyObject>*> ancestors;
@@ -73,6 +73,7 @@ bool SplayTree<DataObject, KeyObject>::insert(DataObject* dataPtr, KeyObject& ke
 		SplayNode<DataObject, KeyObject>*& grandparentsChild = ancestors.empty() ? this->head : (ancestors.top()->right == parentNode ? ancestors.top()->right : ancestors.top()->left);
 		grandparentsChild = parentNode->right == newNode ? this->rotateLeft(parentNode) : this->rotateRight(parentNode);
 	}
+
 	return true;
 }
 
@@ -97,7 +98,7 @@ SplayNode<DataObject, KeyObject>* SplayTree<DataObject, KeyObject>::rotateRight(
 }
 
 template <typename DataObject, typename KeyObject>
-bool SplayTree<DataObject, KeyObject>::remove(KeyObject& key) {
+bool SplayTree<DataObject, KeyObject>::remove(KeyObject key) {
 	// Return false if tree is empty
 	if (this->empty())
 		return false;
@@ -168,7 +169,7 @@ SplayNode<DataObject, KeyObject>* SplayTree<DataObject, KeyObject>::removeNode(S
 }
 
 template <typename DataObject, typename KeyObject>
-DataObject* SplayTree<DataObject, KeyObject>::search(KeyObject& key) {
+DataObject* SplayTree<DataObject, KeyObject>::search(KeyObject key) {
 	// Loop through and find the node
 	stack<SplayNode<DataObject, KeyObject>*> ancestors;
 	auto curNode = this->head;
