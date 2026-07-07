@@ -11,6 +11,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [devMode, setDevMode] = useState(false);
   const [loadTime, setLoadTime] = useState(null);
+  const [estimatedWeight, setEstimatedWeight] = useState(0);
   // Too add, Addresses for Vertiport locations, Brightline/MCO airport, one at I-4, Wekiwa Springs, FL 32779, and one at Turkey lake turnpike rest stop
   const testAddresses = 
   [
@@ -71,7 +72,7 @@ export default function App() {
     }
   };
 
-  const estimatedWeight = passengers * WEIGHT_PER_PASSENGER;
+  setEstimatedWeight(passengers * WEIGHT_PER_PASSENGER);
 
   return (
     <div style={styles.page}>
