@@ -14,6 +14,11 @@ struct TrieNode {
 	vector<TrieNode<DataObject>*> children;
 
 	TrieNode(DataObject* dataPtr, char key, bool isLeaf) : dataPtr(dataPtr), key(key), isLeaf(isLeaf) {}
+	~TrieNode();
 };
 
 /* Implementation */
+template <typename DataObject>
+TrieNode<DataObject>::~TrieNode() {
+	//delete dataPtr;
+}

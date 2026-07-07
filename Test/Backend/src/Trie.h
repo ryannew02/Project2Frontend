@@ -15,10 +15,12 @@ private:
 public:
 	Trie();
 
-	bool insert(DataObject* dataPtr, string& key);
-	bool remove(string& key);
-	DataObject* search(string& key);
-	vector<DataObject*> searchPrefix(string& prefix);
+	bool insert(DataObject* dataPtr, string key);
+	bool remove(string key);
+	DataObject* search(string key);
+	vector<DataObject*> searchPrefix(string prefix);
+
+	~Trie();
 };
 
 /* Implementation */
@@ -26,7 +28,7 @@ template <typename DataObject>
 Trie<DataObject>::Trie() {};
 
 template <typename DataObject>
-bool Trie<DataObject>::insert(DataObject* dataPtr, string& key) {
+bool Trie<DataObject>::insert(DataObject* dataPtr, string key) {
 	// Traverse through the trie inserting a new node where necessary
 	if (root == nullptr)
 		this->root = new TrieNode<DataObject>(nullptr, '\0', false);
@@ -54,15 +56,18 @@ bool Trie<DataObject>::insert(DataObject* dataPtr, string& key) {
 
 		// Set the leaf node parameter if it is the end of string
 		if (i == key.length() - 1) {
+			if (parent->isLeaf)
+				return false;
 			parent->isLeaf = true;
 			parent->dataPtr = dataPtr;
 		}
 	}
+
 	return true;
 }
 
 template <typename DataObject>
-bool Trie<DataObject>::remove(string& key) {
+bool Trie<DataObject>::remove(string key) {
 	// Loop through to find the node matching the end of this key
 	if (root == nullptr)
 		return false;
@@ -101,8 +106,8 @@ bool Trie<DataObject>::remove(string& key) {
 	}
 
 	// Loop back through the stack and delete the highest node that has only one child and is non-leaf
-	TrieNode<DataObject>* node = nullptr;
-	TrieNode<DataObject>* deletionNode = nullptr;
+	auto node = nullptr;
+	auto deletionNode = nullptr;
 	while (!stk.empty()) {
 		// Pop the stack
 		node = stk.top();
@@ -124,22 +129,23 @@ void Trie<DataObject>::deleteNode(TrieNode<DataObject>* parentNode, TrieNode<Dat
 	// Delete all children of the removalNode
 	for (unsigned int i = 0; i < removalNode->children.size(); i++) {
 		this->deleteNode(removalNode, removalNode->children[i]);
-		delete removalNode->children[i];
 	}
 
 	// Loop through parentNode children and delete the removal node
-	for (unsigned int i = 0; i < parentNode->children.size(); i++) {
-		if (parentNode->children[i] == removalNode) {
+	if (parentNode != nullptr) {
+		for (unsigned int i = 0; i < parentNode->children.size(); i++) {
+			if (parentNode->children[i] == removalNode) {
 
-			delete parentNode->children[i];
-			parentNode->children.erase(parentNode->children.begin() + i);
-			break;
+				delete parentNode->children[i];
+				parentNode->children.erase(parentNode->children.begin() + i);
+				break;
+			}
 		}
 	}
 }
 
 template <typename DataObject>
-DataObject* Trie<DataObject>::search(string& key) {
+DataObject* Trie<DataObject>::search(string key) {
 	// Traverse through the trie inserting a new node where necessary
 	if (root == nullptr)
 		return nullptr;
@@ -168,10 +174,10 @@ DataObject* Trie<DataObject>::search(string& key) {
 }
 
 template <typename DataObject>
-vector<DataObject*> Trie<DataObject>::searchPrefix(string& prefix) {
+vector<DataObject*> Trie<DataObject>::searchPrefix(string prefix) {
 	// Traverse through the trie
 	if (root == nullptr)
-		return {};
+		return nullptr;
 
 	auto parent = this->root;
 	vector<TrieNode<DataObject>*> suffixes;
@@ -195,10 +201,24 @@ vector<DataObject*> Trie<DataObject>::searchPrefix(string& prefix) {
 	}
 
 	// Loop through children and find all leaf nodes
-
+	return this->getLeafNodes(parent);
 }
 
 template <typename DataObject>
 vector<DataObject*> Trie<DataObject>::getLeafNodes(TrieNode<DataObject>* parentNode) {
+	vector<DataObject*> leafNodes;
+	if (parentNode->isLeaf)
+		leafNodes.push_back(parentNode->dataPtr);
+	for (unsigned int i = 0; i < parentNode->children.size(); i++) {
+		auto childLeafNodes = this->getLeafNodes(parentNode->children[i]);
+		leafNodes.insert(leafNodes.end(), childLeafNodes.begin(), childLeafNodes.end());
+	}
 
+	return leafNodes;
+}
+
+template <typename DataObject>
+Trie<DataObject>::~Trie() {
+	if (this->root != nullptr)
+		this->deleteNode(nullptr, root);
 }
