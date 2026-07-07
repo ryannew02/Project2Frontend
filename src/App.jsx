@@ -193,7 +193,7 @@ export default function App() {
                 <div key={i} style={styles.routeStop}>
                   <span style={styles.stopNumber}>{i + 1}</span>
                   <div>
-                    <div style={styles.stopAddress}>{stop.address}</div>
+                    <div style={styles.stopAddress}>{stop.address}, {stop.city}, FL {stop.zip} </div>
                     {stop.error && (
                       <div style={styles.stopError}>Not found in database</div>
                     )}

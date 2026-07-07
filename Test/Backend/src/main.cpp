@@ -6,7 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <cstdlib>
-#include <map> //Will need to remove this for final submission when you implement loading of CSV
+#include <map>
 #include "SplayTree.h"
 #include "Location.h"
 #include "Trie.h"
@@ -56,7 +56,6 @@ const string& zipFilepath) {
 	while (getline(zipFile, zipLine)) {
 		if (zipLine.empty()) continue;
 
-		// Remove carriage return if present
 		if (!zipLine.empty() && zipLine.back() == '\r') zipLine.pop_back();
 
 		// Split CSV columns: zip, city
@@ -74,7 +73,6 @@ const string& zipFilepath) {
 	while (getline(file, line)) {
 		if (line.empty()) continue;
 
-		// Remove carriage return if present
 		if (!line.empty() && line.back() == '\r') line.pop_back();
 
 		// Split CSV columns: lat, lon, addressNumber, addressName, unit, zip
@@ -133,7 +131,6 @@ const string& zipFilepath) {
 	while (getline(zipFile, zipLine)) {
 		if (zipLine.empty()) continue;
 
-		// Remove carriage return if present
 		if (!zipLine.empty() && zipLine.back() == '\r') zipLine.pop_back();
 
 		// Split CSV columns: zip, city
@@ -151,7 +148,6 @@ const string& zipFilepath) {
 	while (getline(file, line)) {
 		if (line.empty()) continue;
 
-		// Remove carriage return if present
 		if (!line.empty() && line.back() == '\r') line.pop_back();
 
 		// Split CSV columns: lat, lon, addressNumber, addressName, unit, zip
@@ -267,7 +263,7 @@ string input;
             
 			if(algorithm == "splay")
 			{
-				Location* a = splayTree.search(req); //search still needs to be implemented for this datastructure
+				Location* a = splayTree.search(req);
 				if(a == nullptr){
                 cerr << "NOT FOUND: " << req << endl;
                 foundJson += "{\"address\":\"" + req + "\",\"lat\":0,\"lon\":0,\"error\":\"not found\"}";
@@ -291,7 +287,7 @@ string input;
 
 			else if(algorithm == "trie")
 			{
-                Location* a = trieTree.search(req); //search still needs to be implemented for this datastructure
+                Location* a = trieTree.search(req);
 				if(a == nullptr){
                 cerr << "NOT FOUND: " << req << endl;
                 foundJson += "{\"address\":\"" + req + "\",\"lat\":0,\"lon\":0,\"error\":\"not found\"}";
@@ -312,7 +308,6 @@ string input;
 
             	if (i < requestedAddresses.size() - 1) foundJson += ",";
 			}
-			//Address doesn't exist in either tree
 			else {
                 cerr << "NOT FOUND: " << req << endl;
                 foundJson += "{\"address\":\"" + req + "\",\"lat\":0,\"lon\":0,\"error\":\"not found\"}";
