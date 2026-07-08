@@ -74,8 +74,8 @@ export default function App() {
   const estimatedMinWeight = passengers * WEIGHT_PER_PASSENGER + 1367;
   const estimatedMaxWeight = passengers * WEIGHT_PER_PASSENGER + 4500;
   const estimatedCalculatedWeight = result ? passengers * WEIGHT_PER_PASSENGER + selectedVehicle.weight : passengers * WEIGHT_PER_PASSENGER;
-  const batterChargePercent = result ? result.total_distance_miles / selectedVehicle.range : 0;
-  const batteryChargeNeeded = result ? selectedVehicle.Kwh * batterChargePercent : 0;
+  const batterChargePercent = result ? result.total_distance_miles / selectedVehicle.range * 100 : 0;
+  const batteryChargeNeeded = result ? selectedVehicle.Kwh * batterChargePercent / 100: 0;
 
   return (
     <div style={styles.page}>
@@ -241,7 +241,7 @@ export default function App() {
               </div>
               <div style={styles.batteryRow}>
               <span>Battery Charge Neccessary</span>
-              <span>{batterChargePercent} Charge - {batteryChargeNeeded} kWh Minimum</span>
+              <span>{batterChargePercent.toFixed(0)}% Charge - {batteryChargeNeeded.toFixed(2)} kWh Minimum</span>
               </div>
               <div style={{ ...styles.batteryRow, borderTop: '1px solid #333', paddingTop: '10px', marginTop: '10px' }}>
                 <span>Algorithm Used</span>
