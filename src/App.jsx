@@ -70,10 +70,12 @@ export default function App() {
       setLoading(false);
     }
   };
-  const selectedVehicle = result && result.passengers < 3 && result.total_distance_miles < 22 ? { name: 'EHang EH216-S', capacity: 2, range: 22, weight: 1367 } : result && result.total_distance_miles < 90 ? { name: 'Wisk Generation 6', capacity: 4, range: 90, weight: 4500 } : { name: 'AutoFlight Prosperity I', capacity: 4, range: 155, weight: 4122 };
+  const selectedVehicle = result && result.passengers < 3 && result.total_distance_miles < 22 ? { name: 'EHang EH216-S', capacity: 2, range: 22, weight: 1367, Kwh: 17.2 } : result && result.total_distance_miles < 90 ? { name: 'Wisk Generation 6', capacity: 4, range: 90, weight: 4500, Kwh: 120 } : { name: 'AutoFlight Prosperity I', capacity: 4, range: 155, weight: 4122, Kwh: 173.8 };
   const estimatedMinWeight = passengers * WEIGHT_PER_PASSENGER + 1367;
   const estimatedMaxWeight = passengers * WEIGHT_PER_PASSENGER + 4500;
   const estimatedCalculatedWeight = result ? passengers * WEIGHT_PER_PASSENGER + selectedVehicle.weight : passengers * WEIGHT_PER_PASSENGER;
+  const batterChargePercent = batteryChargeNeeded * result.total_distance_miles / selectedVehicle.range;
+  const batteryChargeNeeded = selectedVehicle.Kwh * batteryChargeNeeded;
 
   return (
     <div style={styles.page}>
@@ -239,7 +241,7 @@ export default function App() {
               </div>
               <div style={styles.batteryRow}>
               <span>Battery Charge Neccessary</span>
-              <span>TBD KWh</span>
+              <span>{batterChargePercent} Charge - {batteryChargeNeeded} kWh Minimum</span>
               </div>
               <div style={{ ...styles.batteryRow, borderTop: '1px solid #333', paddingTop: '10px', marginTop: '10px' }}>
                 <span>Algorithm Used</span>
