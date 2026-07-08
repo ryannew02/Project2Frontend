@@ -70,8 +70,8 @@ export default function App() {
       setLoading(false);
     }
   };
-  const selectedVehicle = result && result.passengers < 3 && result.total_distance_miles < 22 ? { name: 'EHang EH216-S', capacity: 2, range: 22 } : result && result.total_distance_miles < 90 ? { name: 'Wisk Generation 6', capacity: 4, range: 90 } : { name: 'AutoFlight Prosperity I', capacity: 4, range: 155 };
-  const estimatedWeight = passengers * WEIGHT_PER_PASSENGER;
+  const selectedVehicle = result && result.passengers < 3 && result.total_distance_miles < 22 ? { name: 'EHang EH216-S', capacity: 2, range: 22, weight: 1367 } : result && result.total_distance_miles < 90 ? { name: 'Wisk Generation 6', capacity: 4, range: 90, weight: 4500 } : { name: 'AutoFlight Prosperity I', capacity: 4, range: 155, weight: 4122 };
+  const estimatedWeight = result ? passengers * WEIGHT_PER_PASSENGER + selectedVehicle.weight : passengers * WEIGHT_PER_PASSENGER;
 
   return (
     <div style={styles.page}>
