@@ -251,7 +251,7 @@ export default function App() {
               {devMode && loadTime !== null && (
               <div style={styles.batteryRow}>
                 <span>Load Time (Dev)</span>
-                <span style={{ color: '#0ff' }}>{timeElapsed.toFixed(1)} ms</span>
+                <span style={{ color: '#0ff' }}>{timeElapsed} ms</span>
               </div>)}
             </div>
           )}
