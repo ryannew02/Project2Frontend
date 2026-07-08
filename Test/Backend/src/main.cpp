@@ -10,6 +10,7 @@
 #include "SplayTree.h"
 #include "Location.h"
 #include "Trie.h"
+#include <chrono>
 
 constexpr double PI = 3.14159265358979323846;
 
@@ -243,8 +244,9 @@ double haversine(double lat1, double lon1, double lat2, double lon2) {
 void runIO(SplayTree<Location, string>& splayTree, Trie<Location>& trieTree){
 string input;
     // Read incoming JSON from Node
-    while(getline(cin, input))
+	while(getline(cin, input))
     {    
+		auto start = std::chrono::high_resolution_clock::now();
         if (input.empty()) continue;
 
         vector<string> requestedAddresses = getStringArray(input, "addresses");
@@ -315,10 +317,11 @@ string input;
 			
         }
         foundJson += "]";
-
+		auto end = std::chrono::high_resolution_clock::now();
+		int elapsedMicros = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
         // Build response
         string response = "{";
-        response += "\"status\":\"ok\",";
+        response += "\"status\":" + to_string(elapsedMicros) + ",";
         response += "\"passengers\":" + passengers + ",";
         response += "\"total_distance_miles\":" + to_string(totalDistance) + ",";
         response += "\"route\":" + foundJson;

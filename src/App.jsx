@@ -76,6 +76,7 @@ export default function App() {
   const estimatedCalculatedWeight = result ? passengers * WEIGHT_PER_PASSENGER + selectedVehicle.weight : passengers * WEIGHT_PER_PASSENGER;
   const batteryChargePercent = result && selectedVehicle.name == 'EHang EH216-S' ? result.total_distance_miles / (selectedVehicle.range * (1.24 - passengers * .12) * 100) : result ? result.total_distance_miles / (selectedVehicle.range * (1.16 - passengers * 0.04)) * 100 : 0;
   const batteryChargeNeeded = result ? selectedVehicle.Kwh * batteryChargePercent / 100: 0;
+  const timeElapsed = result ? result.status : 0;
 
   return (
     <div style={styles.page}>
@@ -250,7 +251,7 @@ export default function App() {
               {devMode && loadTime !== null && (
               <div style={styles.batteryRow}>
                 <span>Load Time (Dev)</span>
-                <span style={{ color: '#0ff' }}>{loadTime.toFixed(1)} ms</span>
+                <span style={{ color: '#0ff' }}>{timeElapsed.toFixed(1)} ms</span>
               </div>)}
             </div>
           )}

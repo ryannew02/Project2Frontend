@@ -106,8 +106,8 @@ bool Trie<DataObject>::remove(string key) {
 	}
 
 	// Loop back through the stack and delete the highest node that has only one child and is non-leaf
-	auto node = nullptr;
-	auto deletionNode = nullptr;
+	TrieNode<DataObject>* node = nullptr;
+	TrieNode<DataObject>* deletionNode = nullptr;
 	while (!stk.empty()) {
 		// Pop the stack
 		node = stk.top();
