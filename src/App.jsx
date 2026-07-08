@@ -74,8 +74,8 @@ export default function App() {
   const estimatedMinWeight = passengers * WEIGHT_PER_PASSENGER + 1367;
   const estimatedMaxWeight = passengers * WEIGHT_PER_PASSENGER + 4500;
   const estimatedCalculatedWeight = result ? passengers * WEIGHT_PER_PASSENGER + selectedVehicle.weight : passengers * WEIGHT_PER_PASSENGER;
-  const batterChargePercent = result ? result.total_distance_miles / selectedVehicle.range * 100 : 0;
-  const batteryChargeNeeded = result ? selectedVehicle.Kwh * batterChargePercent / 100: 0;
+  const batteryChargePercent = result && selectedVehicle.name == 'EHang EH216-S' ? result.total_distance_miles / (selectedVehicle.range * 100 * (1.24 - passengers * .12)) : result ? result.total_distance_miles / (selectedVehicle.range * 100 * (1.16 - passengers * 0.04)) : 0;
+  const batteryChargeNeeded = result ? selectedVehicle.Kwh * batteryChargePercent / 100: 0;
 
   return (
     <div style={styles.page}>
