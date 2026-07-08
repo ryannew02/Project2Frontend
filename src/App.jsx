@@ -74,8 +74,8 @@ export default function App() {
   const estimatedMinWeight = passengers * WEIGHT_PER_PASSENGER + 1367;
   const estimatedMaxWeight = passengers * WEIGHT_PER_PASSENGER + 4500;
   const estimatedCalculatedWeight = result ? passengers * WEIGHT_PER_PASSENGER + selectedVehicle.weight : passengers * WEIGHT_PER_PASSENGER;
-  const batterChargePercent = result.total_distance_miles / selectedVehicle.range;
-  const batteryChargeNeeded = selectedVehicle.Kwh * batteryChargeNeeded;
+  const batterChargePercent = result ? result.total_distance_miles / selectedVehicle.range : 0;
+  const batteryChargeNeeded = result ? selectedVehicle.Kwh * batteryChargeNeeded : 0;
 
   return (
     <div style={styles.page}>
