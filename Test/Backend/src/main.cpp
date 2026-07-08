@@ -23,8 +23,11 @@ double haversine(double lat1, double lon1, double lat2, double lon2);
 void runIO(SplayTree<Location, string>& splayTree, Trie<Location>& trieTree);
 
 int main() { 
-    string addressFilepath = "/data/addresses.csv";
-    string zipCityFilepath = "/data/zip_city.csv";
+    const char* dataDirEnv = getenv("VAW_DATA_DIR");
+    string dataDir = dataDirEnv ? string(dataDirEnv) : "data";
+
+    string addressFilepath = dataDir + "/addresses.csv";
+    string zipCityFilepath = dataDir + "/zip_city.csv";
 	SplayTree<Location, string> splayTree = loadSplayCSV(addressFilepath, zipCityFilepath);
 	Trie<Location> trieTree = loadTrieCSV(addressFilepath, zipCityFilepath);
 
