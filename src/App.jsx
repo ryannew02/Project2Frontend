@@ -11,7 +11,6 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [devMode, setDevMode] = useState(false);
   const [loadTime, setLoadTime] = useState(null);
-  const [estimatedWeight, setEstimatedWeight] = useState(0);
   // Too add, Addresses for Vertiport locations, Brightline/MCO airport, one at I-4, Wekiwa Springs, FL 32779, and one at Turkey lake turnpike rest stop
   const testAddresses = 
   [
@@ -71,8 +70,8 @@ export default function App() {
       setLoading(false);
     }
   };
-
-  setEstimatedWeight(passengers * WEIGHT_PER_PASSENGER);
+  const selectedVehicle = result && result.passengers < 3 && result.total_distance_miles < 22 ? { name: 'EHang EH216-S', capacity: 2, range: 22 } : result && result.total_distance_miles < 90 ? { name: 'Wisk Generation 6', capacity: 4, range: 90 } : { name: 'AutoFlight Prosperity I', capacity: 4, range: 155 };
+  const estimatedWeight = passengers * WEIGHT_PER_PASSENGER;
 
   return (
     <div style={styles.page}>
@@ -178,7 +177,7 @@ export default function App() {
           <div style={styles.routeHeader}>
             <span style={styles.label}>Route</span>
             <span style={styles.weightBadge}>
-              Est. Weight: {estimatedWeight} lbs
+              Est. Passenger Weight: {estimatedWeight} lbs
             </span>
           </div>
 
@@ -229,10 +228,11 @@ export default function App() {
               <div style={styles.batteryRow}>
               <span>eVTOL Assigned</span>
               {/*other vehicle availble in production at this time EHang EH216-S (2 pax, 62mph, 22mpc), Wisk Generation 6(4 pax, 126mph, 90mpc), AutoFlight Prosperity I (4 pax, 124mph, 155 miles)*/}
-              {(result.passengers < 3 & result.total_distance_miles < 22) ? <span>EHang EH216-S</span> : (result.total_distance_miles < 90) ? <span>Wisk Generation 6</span> : <span>AutoFlight Prosperity I</span>}
+              {/*(result.passengers < 3 & result.total_distance_miles < 22) ? <span>EHang EH216-S</span> : (result.total_distance_miles < 90) ? <span>Wisk Generation 6</span> : <span>AutoFlight Prosperity I</span>*/}
+              <span>{selectedVehicle.name}</span>
               </div>
               <div style={styles.batteryRow}>
-                <span>Est. Weight</span>
+                <span>Est. Calculated Total Weight</span>
                 <span>{estimatedWeight} lbs</span>
               </div>
               <div style={styles.batteryRow}>
