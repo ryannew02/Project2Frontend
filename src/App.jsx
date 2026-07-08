@@ -71,7 +71,9 @@ export default function App() {
     }
   };
   const selectedVehicle = result && result.passengers < 3 && result.total_distance_miles < 22 ? { name: 'EHang EH216-S', capacity: 2, range: 22, weight: 1367 } : result && result.total_distance_miles < 90 ? { name: 'Wisk Generation 6', capacity: 4, range: 90, weight: 4500 } : { name: 'AutoFlight Prosperity I', capacity: 4, range: 155, weight: 4122 };
-  const estimatedWeight = result ? passengers * WEIGHT_PER_PASSENGER + selectedVehicle.weight : passengers * WEIGHT_PER_PASSENGER;
+  const estimatedMinWeight = passengers * WEIGHT_PER_PASSENGER + 1367;
+  const estimatedMaxWeight = passengers * WEIGHT_PER_PASSENGER + 4500;
+  const estimatedCalculatedWeight = result ? passengers * WEIGHT_PER_PASSENGER + selectedVehicle.weight : passengers * WEIGHT_PER_PASSENGER;
 
   return (
     <div style={styles.page}>
@@ -177,7 +179,7 @@ export default function App() {
           <div style={styles.routeHeader}>
             <span style={styles.label}>Route</span>
             <span style={styles.weightBadge}>
-              Est. Passenger Weight: {estimatedWeight} lbs
+              Est. Weight: {estimatedMinWeight} - {estimatedMaxWeight} lbs
             </span>
           </div>
 
@@ -233,7 +235,7 @@ export default function App() {
               </div>
               <div style={styles.batteryRow}>
                 <span>Est. Calculated Total Weight</span>
-                <span>{estimatedWeight} lbs</span>
+                <span>{estimatedCalculatedWeight} lbs</span>
               </div>
               <div style={styles.batteryRow}>
               <span>Battery Charge Neccessary</span>
