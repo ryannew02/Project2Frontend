@@ -241,7 +241,7 @@ export default function App() {
               </div>
               <div style={styles.batteryRow}>
               <span>Battery Charge Neccessary</span>
-              <span>{batterChargePercent.toFixed(0)}% Charge - {batteryChargeNeeded.toFixed(2)} kWh Minimum</span>
+              <span>{batteryChargePercent.toFixed(0)}% Charge - {batteryChargeNeeded.toFixed(2)} kWh Minimum</span>
               </div>
               <div style={{ ...styles.batteryRow, borderTop: '1px solid #333', paddingTop: '10px', marginTop: '10px' }}>
                 <span>Algorithm Used</span>
