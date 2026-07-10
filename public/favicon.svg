@@ -5,9 +5,9 @@
   height="512" 
   fill="none" 
   stroke="#2563eb" 
-  stroke-width="2" 
-  stroke-linecap="round" 
-  stroke-linejoin="round"
+  strokeWidth="2" 
+  strokeLinecap="round" 
+  strokeLinejoin="round"
 >
   <!-- V-Tail or rear stabilizers -->
   <path d="M4 14l3-3M20 14l-3-3" />
