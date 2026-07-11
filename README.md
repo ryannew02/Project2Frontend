@@ -37,7 +37,7 @@ You can configure the port addresses but currently they are set up for 3000 and 
 http://localhost:3000/
 http://localhost:5173/
 
-## ==================Once Application is running=====================
+## Once Application is running
 ## GUI should be self explanitory though some functionality is not entirely functional at this time. 
 
 ## Outside Acknowledgments & Attributions
