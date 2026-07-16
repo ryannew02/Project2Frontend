@@ -55,7 +55,7 @@ export default function App() {
     const startTime = performance.now();
 
     try {
-      const res = await fetch('https://contrary-harold-webcast-extend.trycloudflare.com/api/route', {
+      const res = await fetch('https://oxygen-acetone-tall.ngrok-free.dev/api/route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ addresses: [" Brightline Orlando Station", ...addresses, " Brightline Orlando Station"], passengers, algorithm }),
